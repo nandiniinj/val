@@ -56,6 +56,41 @@
       display: block;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
     }
+    
+    .heart {
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    
+    .heart.fast {
+      animation-duration: 0.45s;
+    }
+    
+    @keyframes pulse {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.15); }
+      60%  { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+    
+    .eye {
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    .eye.scared {
+    animation: wobble 0.35s infinite;
+    }
+
+    @keyframes wobble {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    20%  { transform: translate(-1px, 1px) rotate(-4deg); }
+    40%  { transform: translate(1px, -1px) rotate(4deg); }
+    60%  { transform: translate(-1px, -1px) rotate(-3deg); }
+    80%  { transform: translate(1px, 1px) rotate(3deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+    }
 
     h1 {
       font-size: clamp(26px, 4vw, 44px);
@@ -145,8 +180,11 @@
           <stop offset="1" stop-color="#ff1f68"/>
         </linearGradient>
       </defs>
+      
+      <g transform="translate(-30, 0)">
 
-      <path d="M250 50 C250 33 270 25 282 38
+      <path class="heart"
+      d="M250 50 C250 33 270 25 282 38
                C294 25 314 33 314 50
                C314 78 282 92 282 106
                C282 92 250 78 250 50Z"
@@ -161,28 +199,29 @@
       <path d="M110 92 L95 55 L140 78 Z" fill="#f2a97b"/>
       <path d="M270 92 L285 55 L240 78 Z" fill="#f2a97b"/>
 
-      <circle cx="160" cy="130" r="8"/>
-      <circle cx="220" cy="130" r="8"/>
+      <circle class="eye" cx="160" cy="130" r="8"/>
+      <circle class="eye" cx="220" cy="130" r="8"/>
 
       <path d="M190 144 C186 144 182 148 182 152
                C182 160 190 164 190 170
                C190 164 198 160 198 152
                C198 148 194 144 190 144Z"
             fill="#ff7aa2"/>
+    </g>
     </svg>
 
-    <h1>Kush will you be my valentine?</h1>
+    <h1>Kush, will you be my Valentine? 💘</h1>
 
     <section class="button-zone" id="zone">
-      <button id="yesBtn">Yes!</button>
-      <button id="noBtn">No</button>
+      <button id="yesBtn">Yes 💕</button>
+      <button id="noBtn">No 😈</button>
     </section>
 
     <!-- HINT -->
     <div class="hint" id="hint">“No” seems a bit shy 😈</div>
 
     <section class="result" id="result">
-      <h2>YAY! 🎉</h2>
+      <h2>YAYYYYY 🎉💖</h2>
       <img
         class="fireworks"
         src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
@@ -192,6 +231,8 @@
   </main>
 
   <script>
+    const eyes = document.querySelectorAll(".eye");
+    const heart = document.querySelector(".heart");
     const zone = document.getElementById("zone");
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
@@ -276,8 +317,10 @@
       noBtn.style.transform = "none";
 
       growYes();
+      heart.classList.add("fast"); // 💓 PANIC MODE
+      eyes.forEach(e => e.classList.add("scared")); // 👀 PANIC
     }
-
+    
     zone.addEventListener("pointermove", e => {
       const b = noBtn.getBoundingClientRect();
       const d = Math.hypot(
@@ -285,6 +328,25 @@
         (b.top + b.height / 2) - e.clientY
       );
       if (d < 140) moveNo(e.clientX, e.clientY);
+    });
+    
+    let calmTimer;
+
+    zone.addEventListener("pointermove", e => {
+      const b = noBtn.getBoundingClientRect();
+      const d = Math.hypot(
+        (b.left + b.width / 2) - e.clientX,
+        (b.top + b.height / 2) - e.clientY
+      );
+
+      if (d < 140) {
+        moveNo(e.clientX, e.clientY);
+        clearTimeout(calmTimer);
+        calmTimer = setTimeout(() => {
+        heart.classList.remove("fast");
+        eyes.forEach(e => e.classList.remove("scared"));
+        }, 400);
+      }
     });
 
     noBtn.addEventListener("click", e => e.preventDefault());
@@ -300,6 +362,3 @@
   </script>
 </body>
 </html>
-
-
-
